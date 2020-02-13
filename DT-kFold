@@ -1,0 +1,65 @@
+import pandas as pd
+import numpy as np
+wdbc = pd.read_csv('wdbc.csv', header =None)
+wdbc
+features = wdbc.iloc[:,:-1]
+features
+targets = wdbc.iloc[:, -1]
+targets
+from sklearn.model_selection import train_test_split
+Xtrain, Xtest, Ytrain, Ytest = train_test_split(features,targets,test_size=0.3)
+Xtrain.shape
+Xtest.shape
+from sklearn import tree
+clf = tree.DecisionTreeClassifier(criterion="entropy")
+clf = clf.fit(Xtrain, Ytrain)
+#score = clf.score(Xtest, Ytest) #返回预测的准确度
+
+
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+num_validations=5
+
+accuracy=cross_val_score(clf,Xtest,Ytest,scoring='accuracy',cv=num_validations)
+print('准确率：{:.2f}%'.format(accuracy.mean()*100))
+precision=cross_val_score(clf,Xtest,Ytest,scoring='precision_weighted',cv=num_validations)
+print('精确度：{:.2f}%'.format(precision.mean()*100))
+recall=cross_val_score(clf,Xtest,Ytest,scoring='recall_weighted',cv=num_validations)
+print('召回率：{:.2f}%'.format(recall.mean()*100))
+f1=cross_val_score(clf,Xtest,Ytest,scoring='f1_weighted',cv=num_validations)
+print('F1  值：{:.2f}%'.format(f1.mean()*100))
+
+#from sklearn.model_selection import cross_val_score
+#scores = cross_val_score(clf,features,targets)  #默认是3折交叉验证
+#print("Cross validation scores:{}".format(scores))      #Cross validation scores:[ 0.93684211  0.96842105  0.94179894]
+#print("Mean cross validation score:{:2f}".format(scores.mean()))    #Mean cross validation score:0.949021
+
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import GridSearchCV
+import graphviz
+import pydotplus
+from IPython.display import Image
+import os     
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+feature_name = ['mean radius', 'mean texture','mean perimeter', 'mean area','mean smoothness', 'mean compactness','mean concavity',
+                'mean concave points','mean symmetry', 'mean fractal dimension','radius error', 'texture error','perimeter error',
+                'area error','smoothness error', 'compactness error', 'concavity error', 'concave points error','symmetry error', 
+                'fractal dimension error','worst radius', 'worst texture','worst perimeter', 'worst area','worst smoothness', 
+                'worst compactness','worst concavity', 'worst concave points','worst symmetry', 'worst fractal dimension']
+
+import graphviz
+from IPython.display import Image
+dot_data = tree.export_graphviz(clf
+                               ,feature_names= feature_name
+                               ,class_names=["malignant","benign"]
+                               ,filled=True
+                               ,rounded=True
+                               )
+
+graph = pydotplus.graph_from_dot_data(dot_data)
+Image(graph.create_png())
+#graph = graphviz.Source(dot_data)
+#graph
+#因为划分的数据集每次都不同，所以决策树第一个节点的分类标签都不一样，这是有K折的情况
